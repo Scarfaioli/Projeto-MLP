@@ -34,14 +34,14 @@ public class MainMLP {
 					double erroApAmostra = 0;
 
 					for (int j = 0; j < out.length; j++) {
-						erroApAmostra +=  Math.abs(y[j] - Math.abs(out[j]));
+						erroApAmostra +=  Math.abs(y[j] - out[j]);
 					}
 					
 					double erroClAmostra = 0;
 					double[] ot = MainMLP.getOutThreshold(out);
 					double soma = 0;
 					for (int j = 0; j < out.length; j++) {
-						soma += Math.abs(y[j] - Math.abs(ot[j]));
+						soma += Math.abs(y[j] - ot[j]);
 					}
 					if (soma > 0){
 						erroClAmostra = 1;
@@ -53,14 +53,14 @@ public class MainMLP {
 					double erroApAmostra = 0;
 
 					for (int j = 0; j < out.length; j++) {
-						erroApAmostra +=  Math.abs(y[j] - Math.abs(out[j]));
+						erroApAmostra +=  Math.abs(y[j] - out[j]);
 					}
 					
 					double erroClAmostra = 0;
 					double[] ot = MainMLP.getOutThreshold(out);
 					double soma = 0;
 					for (int j = 0; j < out.length; j++) {
-						soma += Math.abs(y[j] - Math.abs(ot[j]));
+						soma += Math.abs(y[j] - ot[j]);
 					}
 					if (soma > 0){
 						erroClAmostra = 1;
