@@ -6,47 +6,75 @@ public class MainMLP {
 
 	public static void main(String[] args) {
 		Reader r = new Reader();
-		Amostra baseTreino[] = r.readDataSet();
+		Amostra[] database = r.readDataSet();
 
-		MLP rna = new MLP(baseTreino[0].input.length,
-			(int) (baseTreino[0].input.length + baseTreino[0].output.length) / 2,
-			baseTreino[0].output.length, 0.3);
+		MLP rna = new MLP(database[0].input.length,
+			(int) (database[0].input.length + database[0].output.length) / 2,
+			database[0].output.length, 0.3);
 
-		randomizarBase(baseTreino);
+		randomizarBase(database);
 			
 		for (int e = 0; e < 10000; e++) {
 			double erroApEpocaTreino = 0;
 			double erroClEpocaTreino = 0;
 
-			//100 treino 43 teste cp
-			//54 treino 23 teste im
-			//35 treino 17 teste pp
-			for (int a = 0; a < baseTreino.length; a++) {
-				double[] x = baseTreino[a].input;
-				double[] y = baseTreino[a].output;
+			double erroApEpocaTeste = 0;
+			double erroClEpocaTeste = 0;
 
-				double[] out = rna.treinar(x, y);
+			
+			for (int a = 0; a < database.length; a++) {
+				double[] x = database[a].input;
+				double[] y = database[a].output;
+				
+				/*
+				  100 treino 43 teste cp || 54 treino 23 teste im || 35 treino 17 teste pp
+				*/
+				if(a > 100 && a < 143 || a > 197 && a < 220 || a > 255){
+					double[] out = rna.teste(x, y);
+					double erroApAmostra = 0;
 
-				double erroApAmostra = 0;
-				for (int j = 0; j < out.length; j++) {
-					erroApAmostra = erroApAmostra + Math.abs(y[j] - out[j]);
+					for (int j = 0; j < out.length; j++) {
+						erroApAmostra +=  Math.abs(y[j] - Math.abs(out[j]));
+					}
+					
+					double erroClAmostra = 0;
+					double[] ot = MainMLP.getOutThreshold(out);
+					double soma = 0;
+					for (int j = 0; j < out.length; j++) {
+						soma += Math.abs(y[j] - Math.abs(ot[j]));
+					}
+					if (soma > 0){
+						erroClAmostra = 1;
+					}
+					erroApEpocaTeste += erroApAmostra;
+					erroClEpocaTeste += erroClAmostra;
+				}else{
+					double[] out = rna.treinar(x, y);
+					double erroApAmostra = 0;
+
+					for (int j = 0; j < out.length; j++) {
+						erroApAmostra +=  Math.abs(y[j] - Math.abs(out[j]));
+					}
+					
+					double erroClAmostra = 0;
+					double[] ot = MainMLP.getOutThreshold(out);
+					double soma = 0;
+					for (int j = 0; j < out.length; j++) {
+						soma += Math.abs(y[j] - Math.abs(ot[j]));
+					}
+					if (soma > 0){
+						erroClAmostra = 1;
+					}
+					erroApEpocaTreino += erroApAmostra;
+					erroClEpocaTreino += erroClAmostra;
 				}
-
-				double erroClAmostra = 0;
-				double[] ot = MainMLP.getOutThreshold(out);
-				double soma = 0;
-				for (int j = 0; j < out.length; j++) {
-					soma = soma + Math.abs(y[j] - ot[j]);
-				}
-				if (soma > 0)
-					erroClAmostra = 1;
-
-				erroApEpocaTreino = erroApEpocaTreino + erroApAmostra;
-				erroClEpocaTreino = erroClEpocaTreino + erroClAmostra;
 			}
 
-			System.out.printf("Epoca: %6d - erroApEpocaTreino: %.10f - erroClEpocaTreino: %d \n", e,
-					erroApEpocaTreino, (int) erroClEpocaTreino);
+
+
+			System.out.printf("Epoca: %6d - erroApEpocaTreino: %.10f - erroClEpocaTreino: %d"+
+			 		"- erroApEpocaTeste: %.10f - erroClEpocaTeste: %d \n", e, erroApEpocaTreino, 
+					(int) erroClEpocaTreino, erroApEpocaTeste, (int) erroClEpocaTeste);
 		}
 	}
 
